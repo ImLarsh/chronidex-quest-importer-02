@@ -1,4 +1,5 @@
 import { Search, Filter, Shuffle, Heart, Grid3X3, List } from "lucide-react";
+import myPokedexLogo from "@/assets/mypokedex-logo.png";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -81,15 +82,15 @@ export function PokedexHeader({
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4 group">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-glow organic-border flex items-center justify-center transform group-hover:rotate-3 organic-hover creative-shadow">
-                <Grid3X3 className="h-7 w-7 text-primary-foreground" />
-              </div>
-              {/* Decorative dots */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
+              <img 
+                src={myPokedexLogo} 
+                alt="MyPokédex Logo" 
+                className="h-16 w-auto transform group-hover:rotate-3 organic-hover transition-transform duration-300"
+              />
             </div>
             <div className="space-y-1">
               <h1 className="text-3xl font-bold tracking-tight creative-title handwritten-feel">
-                Pokédex
+                MyPokédx
               </h1>
               <p className="text-sm text-muted-foreground italic transform -rotate-1">
                 Gotta catch 'em all! ✨
