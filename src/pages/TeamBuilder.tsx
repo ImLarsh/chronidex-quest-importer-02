@@ -1,29 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, X, Users, Shuffle } from "lucide-react";
+import React, { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { usePokemon } from "@/hooks/usePokemon";
+import { useTeamBuilder } from "@/hooks/useTeamBuilder";
+import { TeamManager } from "@/components/TeamBuilder/TeamManager";
+import { TeamPokemonSlot } from "@/components/TeamBuilder/TeamPokemonSlot";
+import { PokemonSearch } from "@/components/TeamBuilder/PokemonSearch";
+import { TeamAnalysis } from "@/components/TeamBuilder/TeamAnalysis";
+import { PokemonDetailModal } from "@/components/TeamBuilder/PokemonDetailModal";
+import { TeamPokemon, Pokemon } from "@/types/pokemon";
 
 const TeamBuilder = () => {
-  const { pokemon, loading } = usePokemon();
-  const [team, setTeam] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const { pokemon, loading, favorites, toggleFavorite } = usePokemon();
+  const teamBuilder = useTeamBuilder();
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [selectedPokemonForDetail, setSelectedPokemonForDetail] = useState<TeamPokemon | null>(null);
+  const [selectedSlotForDetail, setSelectedSlotForDetail] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = pokemon.filter(p => 
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.id.toString().includes(searchTerm)
-      ).slice(0, 8);
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = parseInt(active.id.split('-')[1]);
+      const newIndex = parseInt(over.id.split('-')[1]);
+      teamBuilder.reorderTeamPokemon(oldIndex, newIndex);
     }
-  }, [searchTerm, pokemon]);
+  };
 
   const addToTeam = (poke: any, slotIndex?: number) => {
     const newTeam = [...team];
